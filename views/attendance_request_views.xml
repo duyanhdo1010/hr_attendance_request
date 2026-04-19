@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 1. TREE VIEW (Danh sách) -->
+    <record id="view_attendance_request_tree" model="ir.ui.view">
+        <field name="name">attendance.request.tree</field>
+        <field name="model">attendance.request</field>
+        <field name="arch" type="xml">
+            <tree string="Forgot Attendance Requests">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="request_date"/>
+                <field name="pm_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- 2. FORM VIEW (Chi tiết) -->
+    <record id="view_attendance_request_form" model="ir.ui.view">
+        <field name="name">attendance.request.form</field>
+        <field name="model">attendance.request</field>
+        <field name="arch" type="xml">
+            <form string="Forgot Attendance Request">
+                <!-- Phần Header: nút bấm và thanh trạng thái -->
+                <header>
+                    <button name="action_submit" string="Submit Request" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <field
+                        name="state"
+                        widget="statusbar"
+                        statusbar_visible="draft,pm_approve,dl_approve,hr_approve,approved"
+                    />
+                </header>
+
+                <!-- Phần Sheet: nội dung chính -->
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="department_id"/>
+                            <field name="pm_id"/>
+                        </group>
+                        <group>
+                            <field name="request_date"/>
+                            <field name="note"/>
+                            <field name="commit_checkbox"/>
+                        </group>
+                    </group>
+
+                    <!-- Notebook: các tab -->
+                    <notebook>
+                        <page string="Chi tiết quên chấm công" name="lines">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="date"/>
+                                    <field name="type"/>
+                                    <field name="reason"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <!-- Chatter: mail.thread / mail.activity.mixin -->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- 3. ACTION -->
+    <record id="action_attendance_request" model="ir.actions.act_window">
+        <field name="name">Quên chấm công</field>
+        <field name="res_model">attendance.request</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- 4. MENU -->
+    <menuitem id="menu_attendance_request_root" name="Quên chấm công" sequence="10"/>
+    <menuitem
+        id="menu_attendance_request_action"
+        name="Danh sách Request"
+        parent="menu_attendance_request_root"
+        action="action_attendance_request"
+        sequence="10"
+    />
+</odoo>
