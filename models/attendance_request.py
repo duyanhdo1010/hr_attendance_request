@@ -1,4 +1,4 @@
-from odoo import fields, models, api
+from odoo import fields, models, api, SUPERUSER_ID
 from odoo.exceptions import UserError
 
 class AttendanceRequest(models.Model):
@@ -60,13 +60,14 @@ class AttendanceRequest(models.Model):
 
     def action_approve(self):
         current_employee = self.env.user.employee_ids[:1]
+        is_admin = self.env.uid == SUPERUSER_ID or self.env.user.has_group('base.group_erp_manager')
         for record in self:
             if record.state == 'pm_approve':
-                if current_employee != record.pm_id:
+                if current_employee != record.pm_id and not is_admin:
                     raise UserError("Only the Project Manager can approve this request!")
                 record.state = 'dl_approve'
             elif record.state == 'dl_approve':
-                if current_employee != record.dl_id:
+                if current_employee != record.dl_id and not is_admin:
                     raise UserError("Only the Department Lead can approve this request!")
                 record.state = 'hr_approve'
             elif record.state == 'hr_approve':
@@ -77,10 +78,11 @@ class AttendanceRequest(models.Model):
     def action_reject(self):
         self.ensure_one()
         current_employee = self.env.user.employee_ids[:1]
+        is_admin = self.env.uid == SUPERUSER_ID or self.env.user.has_group('base.group_erp_manager')
 
-        if self.state == 'pm_approve' and current_employee != self.pm_id:
+        if self.state == 'pm_approve' and current_employee != self.pm_id and not is_admin:
             raise UserError("Only the Project Manager can reject this request!")
-        elif self.state == 'dl_approve' and current_employee != self.dl_id:
+        elif self.state == 'dl_approve' and current_employee != self.dl_id and not is_admin:
             raise UserError("Only the Department Lead can reject this request!")
         elif self.state not in['pm_approve', 'dl_approve', 'hr_approve']:
             raise UserError("You cannot reject at this state!")
