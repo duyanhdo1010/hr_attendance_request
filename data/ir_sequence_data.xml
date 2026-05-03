@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- noupdate="1" nghĩa là khi upgrade module, Odoo sẽ không ghi đè lại cái đếm này, tránh bị reset số -->
+    <data noupdate="1">
+        <record id="seq_attendance_request" model="ir.sequence">
+            <field name="name">Forgot Attendance Sequence</field>
+            <field name="code">attendance.request</field>
+            <field name="prefix">FA/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

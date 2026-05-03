@@ -5,10 +5,11 @@
         <field name="name">attendance.request.tree</field>
         <field name="model">attendance.request</field>
         <field name="arch" type="xml">
-            <tree string="Forgot Attendance Requests">
+            <tree string="Forgot Attendance Requests" decoration-danger="state not in ('approved', 'rejected') and deadline_date != False and deadline_date &lt; current_date">
                 <field name="name"/>
                 <field name="employee_id"/>
                 <field name="request_date"/>
+                <field name="deadline_date"/>
                 <field name="pm_id"/>
                 <field name="dl_id"/>
                 <field name="state"/>
@@ -37,25 +38,40 @@
                         <group>
                             <field name="employee_id" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
                             <field name="department_id"/>
+                            <field name="deadline_date" readonly="1"/>
                             <field name="pm_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="dl_id" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group>
                             <field name="request_date" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
-                            <field name="note" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Chi tiết quên chấm công" name="lines">
-                            <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
+                        <page string="Attendance Request Lines" name="lines">
+                            <field name="line_ids" attrs="{'readonly':[('state', '!=', 'draft')]}">
                                 <tree editable="bottom">
-                                    <field name="date"/>
-                                    <field name="type"/>
+                                    <field name="forget_type"/>
+                                    <field name="work_overnight"/>
+
+                                    <field name="request_checkin" attrs="{'readonly':[('forget_type', '=', 'check_out')]}"/>
+                                    <field name="request_checkout" attrs="{'readonly': [('forget_type', '=', 'check_in')]}"/>
+                                    <field name="request_checkout_overnight" attrs="{'readonly': [('work_overnight', '=', False)]}"/>
+
+                                    <field name="actual_checkin"/>
+                                    <field name="actual_checkout"/>
                                     <field name="reason"/>
+
+                                    <field name="evidence" filename="evidence_name" widget="binary"/>
+                                    <field name="evidence_name" invisible="1"/>
+
+                                    <field name="late_approve"/>
                                 </tree>
                             </field>
                         </page>
                     </notebook>
+                    <group>
+                        <field name="note" attrs="{'readonly':[('state', '!=', 'draft')]}"/>
+                    </group>
                     <group>
                         <field name="commit_checkbox" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                     </group>
@@ -77,10 +93,10 @@
             <search string="Search Requests">
                 <field name="name"/>
                 <field name="employee_id"/>
-                <filter string="Đang Nháp" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
                 <group expand="0" string="Group By">
-                    <filter string="Nhân viên" name="group_by_employee" context="{'group_by': 'employee_id'}"/>
-                    <filter string="Trạng thái" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Employee" name="group_by_employee" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Status" name="group_by_state" context="{'group_by': 'state'}"/>
                 </group>
             </search>
         </field>
@@ -88,11 +104,11 @@
 
     <!-- ACTION & MENU -->
     <record id="action_attendance_request" model="ir.actions.act_window">
-        <field name="name">Quên chấm công</field>
+        <field name="name">Forgot Attendance</field>
         <field name="res_model">attendance.request</field>
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="menu_attendance_request_root" name="Quên chấm công" sequence="10"/>
-    <menuitem id="menu_attendance_request_action" name="Danh sách Request" parent="menu_attendance_request_root" action="action_attendance_request" sequence="10"/>
+    <menuitem id="menu_attendance_request_root" name="Forgot Attendance" sequence="10"/>
+    <menuitem id="menu_attendance_request_action" name="Request List" parent="menu_attendance_request_root" action="action_attendance_request" sequence="10"/>
 </odoo>

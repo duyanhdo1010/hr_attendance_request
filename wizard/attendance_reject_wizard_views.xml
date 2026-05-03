@@ -4,14 +4,14 @@
         <field name="name">attendance.reject.wizard.form</field>
         <field name="model">attendance.reject.wizard</field>
         <field name="arch" type="xml">
-            <form string="Lý do từ chối">
+            <form string="Rejection Reason">
                 <group>
                     <field name="request_id" invisible="1"/>
-                    <field name="reason" placeholder="Nhập lý do từ chối vào đây..."/>
+                    <field name="reason" placeholder="Enter the rejection reason here..."/>
                 </group>
                 <footer>
-                    <button name="action_confirm_reject" string="Xác nhận" type="object" class="btn-danger"/>
-                    <button string="Hủy bỏ" class="btn-secondary" special="cancel"/>
+                    <button name="action_confirm_reject" string="Confirm" type="object" class="btn-danger"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
         </field>
